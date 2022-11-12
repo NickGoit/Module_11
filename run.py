@@ -1,4 +1,5 @@
 from collections import UserDict
+from datetime import datetime
 
 
 class Field:
@@ -7,26 +8,100 @@ class Field:
 
 
 class Name(Field):
-    pass
+    def __str__(self):
+        return f'{self.value}'
 
 
 class Phone(Field):
+    def __init__(self, value):
+        self.__value = None
+        super().__init__(value)
+
+    @property
+    def value(self):
+        return self.__value
+
+    @value.setter
+    def value(self, new_value: str):
+        if new_value.startswith('+38'):
+            self.__value = new_value
+        else:
+            print('Wrong number type')
 
     def __repr__(self):
         return f'{self.value}'
 
     def __eq__(self, o):
         return self.value == o.value
+    #setter та getter логіку для атрибутів value спадкоємців Field.
+    #Перевірку на коректність веденого номера телефону setter для value класу Phone.
+
+
+class Birthday:
+    def __init__(self, datebirth):
+        self._year = None
+        self._month = None
+        self._day = None
+
+    @property
+    def year(self):
+        return self._year
+
+    @year.setter
+    def year(self, year):
+        if year > 1980:
+            self._year = year
+        else:
+            print('Wrong year')
+
+    @property
+    def month(self):
+        return self._month
+
+    @month.setter
+    def month(self, month):
+        if 1 <= month <= 12:
+            self._month = month
+        else:
+            print('Wrong month')
+
+    @property
+    def day(self):
+        return self.day
+
+    @day.setter
+    def day(self, day):
+        if 1 <= day <= 31:
+            self._day = day
+        else:
+            print('Wrong day')
+
+    def birth_datetime(self):
+        return datetime(year=self._year, month=self._month, day=self._day)
+
+
+    def __str__(self):
+        return f'{self._year} {self._month} {self._day}'
+
+    def day_to_next_birthday(self):
+        current_year=datetime.now().year
+        current_day = datetime.now()
+        next_birth = datetime(year=current_year+1, month=self._month, day=self._day)
+        return f'Days to birthday is {(next_birth-current_day).days}'
 
 
 class Record:
 
-    def __init__(self, name_in, phone: str = None):
+    def __init__(self, name_in, phone=None, datebirth=None):
         self.name = Name(name_in)
         self.phones = [Phone(phone) if phone else []]
 
+
     def __repr__(self):
         return f'{self.phones}'
+
+    def __str__(self):
+        return f'{self.name} {self.phones}'
 
     def adding_phone(self, phone):
         self.phones.append(Phone(phone))
@@ -41,6 +116,12 @@ class Record:
     def edit_name(self, new_name):
         self.name = Name(new_name)
 
+    def days_to_birthday(self):
+        birth = Birthday()
+        birth.year = self.year
+        birth.month = self.month
+        birth.day = self.day
+        return birth.day_to_next_birthday()
 
 class AdressBook(UserDict):
     def add_record(self, record):
@@ -60,8 +141,10 @@ class AdressBook(UserDict):
     def show_all_book(self):
         return self.data
 
+    def iterator(self):
+        pass
 
-#CONTACTS: dict = {}
+
 address_book = AdressBook()
 
 def input_error(func):
@@ -165,7 +248,20 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    # main()
+    # birth1 = Birthday()
+    # birth1.year=1900
+    # birth1.value = 1985
+    # print(birth1)
+    # print(birth1.day_to_next_birthday())
+    record1 = Record('Nick','+38245', 1985, 2, 18)
+    print(record1)
+    # record1.birth.value=1990
+    # print(record1)
+    print(record1.days_to_birthday())
+    # phone1 =Phone('+3855')
+    # print(phone1.value)
+
 
 
 
